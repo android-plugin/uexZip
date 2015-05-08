@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uexplugins>
+    <plugin
+        className="org.zywx.wbpalmstar.plugin.uexzip.EUExZip"
+        uexName="uexZip" version="3.0" build="0">
+        <method name="zip" />
+        <method name="unzip" />
+        <method name="zipWithPassword" />
+        <method name="unzipWithPassword" />
+    </plugin>
+</uexplugins>

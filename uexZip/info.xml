@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<uexplugins>
+    <plugin uexName="uexZip" version="3.0.1" build = "1">
+        <info>1:修复非压缩文件也能解压成功的问题</info>
+		<build>0:zip压缩解压功能插件</build>
+	</plugin>
+</uexplugins>
