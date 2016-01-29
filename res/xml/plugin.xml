@@ -18,7 +18,7 @@
         <method name="deleteFileByPath" />
         <method name="deleteFileByID" />
         <method name="isFileExistByPath" />
-         <method name="isFileExistByID" />
+        <method name="isFileExistByID" />
         <method name="getFileTypeByPath" />
         <method name="getFileTypeByID" />
         <method name="explorer" />
@@ -38,5 +38,5 @@
         <method name="readPre" />
         <method name="openSecure" />
         <method name="createSecure" />
-        </plugin>
+    </plugin>
 </uexplugins>
