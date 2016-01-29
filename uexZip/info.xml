@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <uexplugins>
-    <plugin uexName="uexZip" version="3.0.1" build = "1">
+    <plugin uexName="uexZip" version="3.0.2" build = "2">
         <info>2:修复带密码加密时某些情况下返回成功但实际失败的问题</info>
         <build>1:修复非压缩文件也能解压成功的问题</build>
-		<build>0:zip压缩解压功能插件</build>
-	</plugin>
+        <build>0:zip压缩解压功能插件</build>
+    </plugin>
 </uexplugins>
