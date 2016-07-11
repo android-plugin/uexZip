@@ -1,14 +1,9 @@
 package org.zywx.wbpalmstar.plugin.uexzip;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.zip.DataFormatException;
-import java.util.zip.ZipException;
+import android.content.Context;
+import android.widget.Toast;
 
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.base.BUtility;
 import org.zywx.wbpalmstar.base.ResoureFinder;
 import org.zywx.wbpalmstar.base.zip.CnZipInputStream;
@@ -25,8 +20,13 @@ import org.zywx.wbpalmstar.plugin.uexzip.de.idyl.winzipaes.impl.AESEncrypter;
 import org.zywx.wbpalmstar.plugin.uexzip.de.idyl.winzipaes.impl.AESEncrypterBC;
 import org.zywx.wbpalmstar.plugin.uexzip.de.idyl.winzipaes.impl.ExtZipEntry;
 
-import android.content.Context;
-import android.widget.Toast;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.zip.DataFormatException;
 
 public class EUExZip extends EUExBase {
 
@@ -62,40 +62,46 @@ public class EUExZip extends EUExBase {
     /**
      * 将文件（或文件夹）进行压缩为指定的zip文件
      *
-     * @param inSrcPath    要压缩的文件或文件夹
-     * @param inZippedPath 压缩后的zip文件
      * @throws Exception
      */
     public void zip(String[] parm) {
-        if (parm.length != 2) {
+        if (parm.length < 2) {
             return;
         }
+        int callbackId=-1;
+        if (parm.length>2){
+            callbackId= Integer.parseInt(parm[2]);
+        }
         String inSrcPath = parm[0], inZippedPath = parm[1];
-        String newInSrcPath = getPath(inSrcPath);
+        final String newInSrcPath = getPath(inSrcPath);
         if (newInSrcPath == null) {
-            jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbZip(false,callbackId);
             return;
         }
         try {
             File file = new File(newInSrcPath);
             if (!file.exists()) {
-                jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                        EUExCallback.F_C_FAILED);
+                cbZip(false,callbackId);
                 return;
             }
-            String newInZippedPath = getPath(inZippedPath);
+            final String newInZippedPath = getPath(inZippedPath);
             if (newInZippedPath == null) {
                 return;
             }
-            try {
-                zip(newInSrcPath, newInZippedPath, m_encoding);
+            final int finalCallbackId = callbackId;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        zip(newInSrcPath, newInZippedPath, m_encoding, finalCallbackId);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                        EUExCallback.F_C_FAILED);
-            }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                    }
+                }
+            }).start();
+
         } catch (SecurityException e) {
             Toast.makeText(
                     m_context,
@@ -106,63 +112,89 @@ public class EUExZip extends EUExBase {
 
     }
 
-    public void zipWithPassword(String[] parm) {
-        if (parm.length != 3) {
-            return;
-        }
-        String inSrcPath = parm[0], inZippedPath = parm[1], inPassword = parm[2];
-        String newInSrcPath = getPath(inSrcPath);
-        if (newInSrcPath == null) {
+    private void cbZip(boolean result, int callbackId){
+        if (callbackId!=-1){
+            callbackToJs(callbackId,false,result);
+        }else {
             jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
                     EUExCallback.F_C_FAILED);
+        }
+    }
+
+    public void zipWithPassword(String[] parm) {
+        if (parm.length < 3) {
+            return;
+        }
+        int callbackId=-1;
+        if (parm.length>3){
+            callbackId= Integer.parseInt(parm[3]);
+        }
+        final String inSrcPath = parm[0], inZippedPath = parm[1], inPassword = parm[2];
+        final String newInSrcPath = getPath(inSrcPath);
+        if (newInSrcPath == null) {
+            cbZip(false,callbackId);
             return;
         }
         File file = new File(newInSrcPath);
         if (!file.exists()) {
-            jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbZip(false,callbackId);
             return;
         }
-        String newInZippedPath = getPath(inZippedPath);
+        final String newInZippedPath = getPath(inZippedPath);
         if (newInZippedPath == null) {
             return;
         }
-        try {
-            zipDirWithPassword(newInSrcPath, newInZippedPath, inPassword);
-            jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_SUCCESS);
-        } catch (Exception e) {
-            e.printStackTrace();
-            jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
+        final int finalCallbackId = callbackId;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    zipDirWithPassword(newInSrcPath, newInZippedPath, inPassword);
+                    cbZip(true, finalCallbackId);
+                } catch (Exception e) {
+                    if (BDebug.DEBUG){
+                        e.printStackTrace();
+                    }
+                    cbZip(false, finalCallbackId);
+                }
+            }
+        }).start();
+    }
+
+    private void cbUnzip(boolean result,int callbackId){
+        if (callbackId!=-1){
+            callbackToJs(callbackId,false,result);
+        }else{
+            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
                     EUExCallback.F_C_FAILED);
         }
-
     }
+
 
     /**
      * 将指定的zip文件解压到指定的目录下,如果文件已存在则覆盖。
      *
-     * @param inSrcPath      zip压缩文件,如 D:/doc_c06_net.zip
-     * @param inUnzippedPath 解压路径,如 D:/doc_redcome_com/
      * @throws Exception
      */
     public void unzip(String[] parm) {
-        if (parm.length != 2) {
+        if (parm.length < 2) {
             return;
+        }
+        int callbackId=-1;
+        if (parm.length>2){
+            callbackId= Integer.parseInt(parm[2]);
         }
         String inSrcPath = parm[0], inUnzippedPath = parm[1];
         String newInSrcPath = getPath(inSrcPath);
         if (newInSrcPath == null) {
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(false,callbackId);
             return;
         }
         try {
             InputStream fileInputStream = null;
             String suffix = newInSrcPath.substring(newInSrcPath.lastIndexOf('.') + 1);
             if (!"zip".equalsIgnoreCase(suffix) && !"rar".equalsIgnoreCase(suffix)) {
-                jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                        EUExCallback.F_C_FAILED);
+                cbUnzip(false,callbackId);
                 return;
             }
             if (newInSrcPath.startsWith("/")) {
@@ -171,65 +203,76 @@ public class EUExZip extends EUExBase {
             } else {
                 fileInputStream = mContext.getAssets().open(newInSrcPath);
             }
-            String newInUnzippedPath = getPath(inUnzippedPath);
+            final String newInUnzippedPath = getPath(inUnzippedPath);
             if (newInUnzippedPath == null) {
-                jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                        EUExCallback.F_C_FAILED);
+                cbUnzip(false,callbackId);
                 return;
             }
-            dezip(fileInputStream, newInUnzippedPath, m_encoding);
+            final InputStream finalFileInputStream = fileInputStream;
+            final int finalCallbackId = callbackId;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dezip(finalFileInputStream, newInUnzippedPath, m_encoding, finalCallbackId);
+                }
+            }).start();
         } catch (SecurityException e) {
             Toast.makeText(
                     m_context,
                     ResoureFinder.getInstance().getString(mContext,
                             "error_no_permisson_INTERNET"), Toast.LENGTH_SHORT)
                     .show();
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(false,callbackId);
         } catch (IOException e) {
             Toast.makeText(
                     m_context,
                     ResoureFinder.getInstance().getString(mContext,
                             "error_no_permisson_INTERNET"), Toast.LENGTH_SHORT)
                     .show();
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(false,callbackId);
             e.printStackTrace();
         }
 
     }
 
     public void unzipWithPassword(String[] parm) {
-        if (parm.length != 3) {
+        if (parm.length < 3) {
             return;
         }
-        String inSrcPath = parm[0], inUnzippedPath = parm[1], inPassword = parm[2];
-        String newInSrcPath = getPath(inSrcPath);
+        int callbackId=-1;
+        if (parm.length>3){
+            callbackId= Integer.parseInt(parm[3]);
+        }
+        final String inSrcPath = parm[0], inUnzippedPath = parm[1], inPassword = parm[2];
+        final String newInSrcPath = getPath(inSrcPath);
         if (newInSrcPath == null || !newInSrcPath.startsWith("/")) {
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(false,callbackId);
             return;
         }
-        try {
+        final int finalCallbackId = callbackId;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-            String newInUnzippedPath = getPath(inUnzippedPath);
-            if (newInUnzippedPath == null) {
-                jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                        EUExCallback.F_C_FAILED);
-                return;
+                    String newInUnzippedPath = getPath(inUnzippedPath);
+                    if (newInUnzippedPath == null) {
+                        cbUnzip(false, finalCallbackId);
+                        return;
+                    }
+                    unzipDirWithPassword(newInSrcPath, newInUnzippedPath, inPassword);
+                    cbUnzip(true, finalCallbackId);
+                } catch (Exception e) {
+                    cbUnzip(false, finalCallbackId);
+                }
+
             }
-            unzipDirWithPassword(newInSrcPath, newInUnzippedPath, inPassword);
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_SUCCESS);
-        } catch (Exception e) {
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
-        }
+        }).start();
 
     }
 
     private void zip(String inputFileName, String outputFileName,
-                     String encoding) throws Exception {
+                     String encoding,int callbackId) throws Exception {
         if (encoding == null || encoding.equals(""))
             encoding = "UTF-8";
 
@@ -244,8 +287,7 @@ public class EUExZip extends EUExBase {
                 outputFileName), encoding);
         zip(out, new File(inputFileName), "");
         out.close();
-        jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                EUExCallback.F_C_SUCCESS);
+        cbZip(true,callbackId);
     }
 
     private void zip(CnZipOutputStream out, File f, String base)
@@ -274,7 +316,7 @@ public class EUExZip extends EUExBase {
     }
 
     private void dezip(InputStream compress, String decompression,
-                       String encoding) {
+                       String encoding, int callbackId) {
         if (encoding == null || encoding.equals(""))
             encoding = "UTF-8";
         File dir = new File(decompression);
@@ -305,21 +347,9 @@ public class EUExZip extends EUExBase {
                 file = in.getNextEntry();
             }
             in.close();
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_SUCCESS);
-        } catch (ZipException zipe) {
-
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
-        } catch (IOException ioe) {
-
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(true,callbackId);
         } catch (Exception i) {
-            System.out.println("over");
-
-            jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+            cbUnzip(false,callbackId);
         }
 
     }
