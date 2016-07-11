@@ -2,9 +2,9 @@
 <uexplugins>
     <plugin
         className="org.zywx.wbpalmstar.plugin.uexzip.EUExZip" uexName="uexZip">
-        <method name="zip" />
-        <method name="unzip" />
-        <method name="zipWithPassword" />
-        <method name="unzipWithPassword" />
+        <method name="zip"/>
+        <method name="unzip"/>
+        <method name="zipWithPassword"/>
+        <method name="unzipWithPassword"/>
     </plugin>
 </uexplugins>

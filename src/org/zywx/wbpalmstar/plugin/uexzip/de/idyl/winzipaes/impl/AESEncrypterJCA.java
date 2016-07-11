@@ -25,41 +25,41 @@ import java.util.Random;
  */
 public class AESEncrypterJCA implements AESEncrypter {
 
-	private byte[] salt;
-	private AESUtilsJCA utils;
+    private byte[] salt;
+    private AESUtilsJCA utils;
 
-	public void init(String password, int keySize) {
-		salt = createSalt(keySize / 16);
-		utils = new AESUtilsJCA(password, keySize, salt);
-	}
+    public void init(String password, int keySize) {
+        salt = createSalt(keySize / 16);
+        utils = new AESUtilsJCA(password, keySize, salt);
+    }
 
-	@Override
-	public void encrypt(byte[] in, int length) {
-		utils.cryptUpdate(in, length);
-		utils.authUpdate(in, length);
-	}
+    @Override
+    public void encrypt(byte[] in, int length) {
+        utils.cryptUpdate(in, length);
+        utils.authUpdate(in, length);
+    }
 
-	@Override
-	public byte[] getSalt() {
-		return salt;
-	}
+    @Override
+    public byte[] getSalt() {
+        return salt;
+    }
 
-	@Override
-	public byte[] getPwVerification() {
-		return utils.getPasswordVerifier();
-	}
+    @Override
+    public byte[] getPwVerification() {
+        return utils.getPasswordVerifier();
+    }
 
-	@Override
-	public byte[] getFinalAuthentication() {
-		return utils.getFinalAuthentifier();
-	}
+    @Override
+    public byte[] getFinalAuthentication() {
+        return utils.getFinalAuthentifier();
+    }
 
-	private static final Random RANDOM = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
-	private static byte[] createSalt(int size) {
-		byte[] salt = new byte[size];
-		RANDOM.nextBytes(salt);
-		return salt;
-	}
+    private static byte[] createSalt(int size) {
+        byte[] salt = new byte[size];
+        RANDOM.nextBytes(salt);
+        return salt;
+    }
 
 }

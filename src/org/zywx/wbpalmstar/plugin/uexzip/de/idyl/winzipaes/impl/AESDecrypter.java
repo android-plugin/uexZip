@@ -9,10 +9,10 @@ import java.util.zip.ZipException;
  */
 public interface AESDecrypter {
 
-	public void init(String pwStr, int keySize, byte[] salt, byte[] pwVerification ) throws ZipException;
-	
-	public void decrypt( byte[] in, int length );
+    public void init(String pwStr, int keySize, byte[] salt, byte[] pwVerification) throws ZipException;
 
-	public byte[] getFinalAuthentication();
+    public void decrypt(byte[] in, int length);
+
+    public byte[] getFinalAuthentication();
 
 }

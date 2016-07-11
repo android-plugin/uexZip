@@ -9,14 +9,14 @@ import java.util.zip.ZipException;
  */
 public interface AESEncrypter {
 
-	public void init(String pwStr, int keySize) throws ZipException;
+    public void init(String pwStr, int keySize) throws ZipException;
 
-	public void encrypt(byte[] in, int length);
+    public void encrypt(byte[] in, int length);
 
-	public byte[] getSalt();
+    public byte[] getSalt();
 
-	public byte[] getPwVerification();
+    public byte[] getPwVerification();
 
-	public byte[] getFinalAuthentication();
+    public byte[] getFinalAuthentication();
 
 }
