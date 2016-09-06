@@ -68,8 +68,8 @@ public class EUExZip extends EUExBase {
         if (parm.length < 2) {
             return;
         }
-        int callbackId=-1;
-        if (parm.length>2){
+        int callbackId = -1;
+        if (parm.length > 2){
             callbackId= Integer.parseInt(parm[2]);
         }
         String inSrcPath = parm[0], inZippedPath = parm[1];
@@ -114,7 +114,7 @@ public class EUExZip extends EUExBase {
 
     private void cbZip(boolean result, int callbackId){
         if (callbackId!=-1){
-            callbackToJs(callbackId,false,result);
+            callbackToJs(callbackId,false, result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }else {
             jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
                     EUExCallback.F_C_FAILED);
@@ -163,7 +163,7 @@ public class EUExZip extends EUExBase {
 
     private void cbUnzip(boolean result,int callbackId){
         if (callbackId!=-1){
-            callbackToJs(callbackId,false,result);
+            callbackToJs(callbackId,false,result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }else{
             jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
                     EUExCallback.F_C_FAILED);

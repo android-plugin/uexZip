@@ -58,7 +58,7 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 14 //
-        applicationId 'org.zywx.wbpalmstar.widgetone.uexUnisound'
+        applicationId 'org.zywx.wbpalmstar.widgetone.uexZip'
     }
     sourceSets {
         main {
