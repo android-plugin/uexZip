@@ -117,7 +117,7 @@ public class EUExZip extends EUExBase {
             callbackToJs(callbackId,false, result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }else {
             jsCallback(F_CALLBACK_NAME_ZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+                    result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }
     }
 
@@ -166,7 +166,7 @@ public class EUExZip extends EUExBase {
             callbackToJs(callbackId,false,result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }else{
             jsCallback(F_CALLBACK_NAME_UNZIP, 0, EUExCallback.F_C_INT,
-                    EUExCallback.F_C_FAILED);
+                    result ? EUExCallback.F_C_SUCCESS : EUExCallback.F_C_FAILED);
         }
     }
 
