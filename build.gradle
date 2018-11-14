@@ -31,8 +31,10 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
-    compile 'org.appcan:engine:+:systemRelease@aar'
-    compile(name: "uexFileMgr-debug", ext: 'aar')
+//    compile 'org.appcan:engine:+:systemRelease@aar'
+//    compile(name: "uexFileMgr-debug", ext: 'aar')
+    compile(name: 'Engine-system-release', ext: 'aar')
+    compile 'com.android.support:multidex:1.0.0'
 }
 
 
@@ -57,7 +59,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 14 //
+        targetSdkVersion 26
         applicationId 'org.zywx.wbpalmstar.widgetone.uexZip'
         multiDexEnabled true
     }

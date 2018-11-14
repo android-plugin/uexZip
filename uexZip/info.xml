@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <uexplugins>
-    <plugin uexName="uexZip" version="4.0.0" build="0">
-        <info>0:zip压缩解压功能插件</info>
+    <plugin uexName="uexZip" version="4.3.0" build="1">
+        <info>1:添加动态权限申请</info>
+        <build>0:zip压缩解压功能插件</build>
     </plugin>
 </uexplugins>
