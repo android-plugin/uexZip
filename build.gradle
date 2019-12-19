@@ -19,9 +19,10 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,11 +31,8 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile fileTree(include: '*.jar', dir: 'libs')
-//    compile 'org.appcan:engine:+:systemRelease@aar'
-//    compile(name: "uexFileMgr-debug", ext: 'aar')
-    compile(name: 'Engine-system-release', ext: 'aar')
-    compile 'com.android.support:multidex:1.0.0'
+    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation 'org.appcan:engine:4.4.27'
 }
 
 
@@ -42,14 +40,15 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    google()
     maven {
         url 'https://raw.githubusercontent.com/android-plugin/mvn-repo/master/'
     }
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    compileSdkVersion 28
+//    buildToolsVersion "23.0.0"
     lintOptions {
         abortOnError false
     }
@@ -58,8 +57,8 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 18
+        targetSdkVersion 28
         applicationId 'org.zywx.wbpalmstar.widgetone.uexZip'
         multiDexEnabled true
     }
