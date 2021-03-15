@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <uexplugins>
-    <plugin uexName="uexZip" version="4.3.0" build="1">
-        <info>1:添加动态权限申请</info>
+    <plugin uexName="uexZip" version="4.4.3" build="2021031501">
+        <info>3:更新BC加密库至1.6.0版</info>
+        <build>1:添加动态权限申请</build>
         <build>0:zip压缩解压功能插件</build>
     </plugin>
 </uexplugins>
