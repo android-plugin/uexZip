@@ -31,8 +31,9 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation fileTree(include: '*.jar', dir: 'libs')
+//    implementation fileTree(include: '*.jar', dir: 'libs')
     implementation 'org.appcan:engine:4.4.27'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
 }
 
 
@@ -40,6 +41,7 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    jcenter()
     google()
     maven {
         url 'https://raw.githubusercontent.com/android-plugin/mvn-repo/master/'
@@ -73,18 +75,6 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-
-        // Move the tests to tests/java, tests/res, etc...
-        instrumentTest.setRoot('tests')
-
-        // Move the build types to build-types/<type>
-        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
-        // This moves them out of them default location under src/<type>/... which would
-        // conflict with src/ being used by the main source set.
-        // Adding new build types or product flavors should be accompanied
-        // by a similar customization.
-        debug.setRoot('build-types/debug')
-        release.setRoot('build-types/release')
     }
     productFlavors {
     }
